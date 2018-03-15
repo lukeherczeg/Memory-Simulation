@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 using namespace std;
 #include "pa2.h"
 
@@ -64,17 +65,55 @@ template <class T> void LinkedList<T>::print(){
 	cout << "NULL\n";
 }
 
+void OS::addPageBestAlgorithm(string programName, int pageSize){
+	;
+}
+
+void OS::addPageWorstAlgorithm(string programName,int pageSize){
+	;
+}
+
+int OS::getFreeSpaceSize(Page * startPage){
+	return 0;
+}
+
+OS::OS(string algorithmChosen,int osSize){ // @suppress("Class members should be properly initialized")
+	this->algorithmChosen = algorithmChosen;
+	this->size = osSize;
+}
+
+void addPage(string programName, int pageSize){
+	;
+}
+
+void removePage(string programName){
+	;
+}
+
+int amountOfFragments(){
+	return 0;
+}
+
+void print(){
+	;
+}
+
+
+
+
+
 int main() {
-	LinkedList <int> * linkedList = new LinkedList<int>();
+	LinkedList <int> * list = new LinkedList<int>();
+	LinkedList <string> * list2 = new LinkedList<string>();
 	for(int i = 0; i < 5; i++){
-		linkedList->quickAppend(i);
+		list->quickAppend(i);
 	}
-	linkedList->print();
-	linkedList->remove(0);
-	linkedList->print();
-	linkedList->remove(2);
-	linkedList->print();
-	linkedList->quickAppend(26);
-	linkedList->print();
+	for(int i = 0; i < 5; i++){
+		list2->quickAppend("Bobbyboy");
+	}
+	list2->print();
+	list->print(); list->remove(2); list->print();
+	list->quickAppend(26);
+	list->print();
 	return 0;
 }
