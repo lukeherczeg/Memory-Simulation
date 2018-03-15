@@ -57,16 +57,25 @@ template <class T> void LinkedList<T>::remove(int index){
 }
 
 template <class T> void LinkedList<T>::print(){
+	int count = 0;
 	Node <T> * temp = head;
 	while(temp != NULL){
-		cout << temp->data << " -> ";
+		cout << temp->data << " ";
 		temp = temp->next;
+		count++;
+		if(count % 8 == 0){
+			cout << endl;
+		}
 	}
-	cout << "NULL\n";
+	//cout << "NULL\n";
 }
 
 void OS::addPageBestAlgorithm(string programName, int pageSize){
-	;
+	LinkedList <string> * list = new LinkedList<string>();
+	for(int i = 0; i < pageSize; i += 4){
+		list->quickAppend(programName);
+	}
+
 }
 
 void OS::addPageWorstAlgorithm(string programName,int pageSize){
@@ -82,38 +91,34 @@ OS::OS(string algorithmChosen,int osSize){ // @suppress("Class members should be
 	this->size = osSize;
 }
 
-void addPage(string programName, int pageSize){
+void OS::addPage(string programName, int pageSize){
+	if(algorithmChosen == "best"){
+		addPageBestAlgorithm(programName,pageSize);
+	}
+	else {
+		addPageWorstAlgorithm(programName,pageSize);
+	}
+}
+
+void OS::removePage(string programName){
 	;
 }
 
-void removePage(string programName){
-	;
-}
-
-int amountOfFragments(){
+int OS::amountOfFragments(){
 	return 0;
 }
 
-void print(){
+void OS::print(){
 	;
 }
-
-
 
 
 
 int main() {
-	LinkedList <int> * list = new LinkedList<int>();
-	LinkedList <string> * list2 = new LinkedList<string>();
-	for(int i = 0; i < 5; i++){
-		list->quickAppend(i);
+	LinkedList <string> * list = new LinkedList<string>();
+	for(int i = 0; i < 32; i++){
+		list->quickAppend("Free");
 	}
-	for(int i = 0; i < 5; i++){
-		list2->quickAppend("Bobbyboy");
-	}
-	list2->print();
-	list->print(); list->remove(2); list->print();
-	list->quickAppend(26);
 	list->print();
 	return 0;
 }
