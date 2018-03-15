@@ -1,40 +1,27 @@
+#include <string>
 #ifndef PA2_H_
 #define PA2_H_
 
-template<class T> class Node {
-public:
-	T data;
-	Node<T> * next;
-};
-
-template <class T> class LinkedList{
-private:
-	Node<T> * head;
-	Node<T> * tail;
-public:
-	void quickAppend(T value);
-	void add(int index, T value);
-	void remove(int index);
-	T get(int index);
-	void print();
-};
-
 class Page {
-	string programName;
+public:
+	std::string data;
+	Page * next;
 };
 
 class OS {
 private:
-	string algorithmChosen;
+	std::string algorithmChosen;
 	Page * startPage;
+	Page * endPage;
 	int size;
-	void addPageBestAlgorithm(string programName, int pageSize);
-	void addPageWorstAlgorithm(string programName, int pageSize);
+	void addPageBestAlgorithm(std::string programName, int pageSize);
+	void addPageWorstAlgorithm(std::string programName, int pageSize);
 	int getFreeSpaceSize(Page * startPage);
 public:
-	OS(string algorithmChosen, int osSize);
-	void addPage(string programName, int pageSize);
-	void removePage(string programName);
+	OS(std::string algorithmChosen, int osSize);
+	void quickAppend(std::string programName);
+	void addPage(std::string programName, int pageSize);
+	void removePage(std::string programName);
 	int amountOfFragments();
 	void print();
 };
