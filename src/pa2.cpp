@@ -45,8 +45,9 @@ int OS::getFreeSpaceSize(Page * startPage){
 OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members should be properly initialized")
 	this->algorithmChosen = algorithmChosen;
 	this->size = osSize;
-	/*for(int i = 0; i < osSize/4; i++)
-		this->quickAppend("Free");*/
+	startPage = NULL;
+	for(int i = 0; i < osSize/4; i++)
+		this->quickAppend("Free ");
 }
 
 void OS::addPage(std::string programName, int pageSize){
