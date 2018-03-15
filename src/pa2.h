@@ -26,19 +26,4 @@ public:
 	void print();
 };
 
-
-
-
-/*class Matrix{
-	private:
-		int size;
-		int ** matrix;  //array that contains references to other arrays
-	public:
-		Matrix(int size);
-		~Matrix();
-		void print();
-		int get(int row, int column);
-	};
-*/
-
 #endif /* PA2_H_ */

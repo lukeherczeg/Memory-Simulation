@@ -39,7 +39,18 @@ void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
 }
 
 int OS::getFreeSpaceSize(Page * startPage){
-	return 0;
+	int count = 0;
+	Page * temp = startPage;
+	if(temp->next != NULL){
+		while(temp != NULL && temp->data == "Free "){
+			count += 4;
+			temp = temp->next;
+		}
+	}
+	else
+		count = 4;
+
+	return count;
 }
 
 OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members should be properly initialized")
@@ -81,9 +92,9 @@ void OS::removePage(std::string programName){
 }
 
 int OS::amountOfFragments(){
-	//int size = this->getFreeSpaceSize();
+	int size = this->getFreeSpaceSize(startPage);
 
-	return 0;
+	return size;
 }
 
 void OS::print(){
@@ -105,5 +116,6 @@ int main() {
 	std::string algorithmChosen = "best";
 	OS * oSystem = new OS(algorithmChosen, 128);
 	oSystem->print();
+	std::cout << oSystem->amountOfFragments() << std::endl;
 	return 0;
 }
