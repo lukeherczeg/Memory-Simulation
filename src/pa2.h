@@ -13,14 +13,15 @@ private:
 	std::string algorithmChosen;
 	Page * startPage;
 	Page * endPage;
+	int index;
 	int size;
 	void addPageBestAlgorithm(std::string programName, int pageSize);
 	void addPageWorstAlgorithm(std::string programName, int pageSize);
-	void addPage(std::string programName, int index);
 	int getFreeSpaceSize(Page * startPage);
 public:
 	OS(std::string algorithmChosen, int osSize);
-	void quickAppend(std::string programName);
+	void addToFront(std::string programName);
+	void addAfter(std::string program, int index);
 	void chooseAlgorithm(std::string programName, int pageSize);
 	void removePage(std::string programName);
 	int amountOfFragments();

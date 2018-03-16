@@ -3,26 +3,51 @@
 #include <algorithm>
 #include "pa2.h"
 
+int max(int a,int b){
+	return((a>b) ? (a) : (b));
+}
+
 OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members should be properly initialized")
 	this->algorithmChosen = algorithmChosen;
 	this->size = osSize;
 	startPage = NULL;
 	for(int i = 0; i < osSize/4; i++)
-		this->quickAppend("Free");
+		this->addToFront("FREE");
 }
 
-void OS::quickAppend(std::string programName){
+void OS::addAfter(std::string programName, int index){
+	Page * temp, * left, * right;
+	right = startPage;
+	for(int i = 1; i < index; i++){
+		left = right;
+		right = right->next;
+	}
+	temp = new Page();
+	temp->data = programName;
+	left->next = temp;
+	left = temp;
+	left->next = right;
+	temp = right;
+	right->next = temp->next;
+	if(temp == endPage)
+		endPage = right;
+	right->next = right->next->next;
+	delete temp;
+	temp = NULL;
+}
+
+void OS::addToFront(std::string programName){
 	if(startPage==NULL){
 		startPage = new Page();
 		startPage->data = programName;
 		endPage = startPage;
 		return;
 	}
-	endPage->next = new Page();
-	endPage->next->data = programName;
-	endPage = endPage->next;
+	Page * temp = new Page();
+	temp->data = programName;
+	temp->next = startPage;
+	startPage = temp;
 }
-
 
 void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 	int numFragments = this->amountOfFragments();
@@ -54,21 +79,24 @@ void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 }
 
 void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
-	Page * temp = new Page();
+	Page * temp = startPage;
 	int amtFragments = this->amountOfFragments();
-	int * amtOfFragment = new int[amtFragments];
+	int * amtsOfFragment = new int[amtFragments];
 	int amtFreeSpace = 0;
 	for(int i = 0; i < amtFragments; i++){
 		amtFreeSpace = this->getFreeSpaceSize(temp);
-		amtOfFragment[i] = amtFreeSpace;
+		amtsOfFragment[i] = amtFreeSpace;
 		if(temp->next != NULL)
 			for(int i = 0; i < amtFreeSpace/4; i++)
 				temp = temp->next;
 	}
-	std::sort(amtOfFragment[0],amtOfFragment[amtFragments-1]);
-	if(amtOfFragment[amtFragments-1] >= pageSize){
-		//
-		//addPage(programName,
+	int maxVal = 0;
+	for(int i = 0; i < amtFragments; i++){
+		maxVal = max(amtsOfFragment[i], maxVal);
+	}
+	if(maxVal >= pageSize){
+		//for(pagesize)
+		//addAfter(programName, index of the start of maxVal)
 	}
 	else{
 		std::cout << "Cannot add, not enough space." << std::endl;
@@ -80,7 +108,7 @@ int OS::getFreeSpaceSize(Page * startPage){
 	Page * temp = startPage;
 	if(temp->next != NULL){
 		while(temp != NULL){
-			if(temp->data == "Free"){
+			if(temp->data == "FREE"){
 				count += 4;
 				temp = temp->next;
 			}
@@ -89,7 +117,7 @@ int OS::getFreeSpaceSize(Page * startPage){
 			}
 		}
 	}
-	else if(startPage->next == NULL && startPage->data == "Free")
+	else if(startPage->next == NULL && startPage->data == "FREE")
 		count = 4;
 
 	return count;
@@ -115,7 +143,7 @@ void OS::removePage(std::string programName){
 	Page * current = startPage;
 	while(programName != current->data)
 		current = current->next;
-	Page * temp = current->next;
+	Page * temp = current;
 	current->next = temp->next;
 	if(temp == endPage)
 		endPage = current;
@@ -163,8 +191,14 @@ int main() {
 	std::string algorithmChosen = "best";
 	OS * oSystem = new OS(algorithmChosen, 128);
 	oSystem->print();
-	std::cout << "Number of fragments:: " << oSystem->amountOfFragments() << std::endl;
-	oSystem->quickAppend(algorithmChosen);
+	std::cout << std::endl;
+	oSystem->removePage("FREE");
+	oSystem->print();
+	std::cout << "\nNumber of fragments:: " << oSystem->amountOfFragments() << "\n" <<std::endl;
+	oSystem->addToFront(algorithmChosen);
+	oSystem->print();
+	std::cout << std::endl;
+	oSystem->addAfter(algorithmChosen,5);
 	oSystem->print();
 	return 0;
 }
