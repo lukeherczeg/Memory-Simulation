@@ -8,12 +8,23 @@ public:
 	Page * next;
 };
 
+class Iterator{
+private:
+	Page * startNode;
+	Page * currentNode;
+public:
+	Iterator(Page * startNode);
+	bool end();
+	void begin();
+	Page * current();
+	void next();
+};
+
 class OS {
 private:
 	std::string algorithmChosen;
 	Page * startPage;
 	Page * endPage;
-	int index;
 	int size;
 	void addPageBestAlgorithm(std::string programName, int pageSize);
 	void addPageWorstAlgorithm(std::string programName, int pageSize);
@@ -21,11 +32,12 @@ private:
 public:
 	OS(std::string algorithmChosen, int osSize);
 	void addToFront(std::string programName);
-	void addAfter(std::string program, int index);
+	void addAfter(std::string program, Page * loc);
 	void chooseAlgorithm(std::string programName, int pageSize);
 	void removePage(std::string programName);
 	int amountOfFragments();
 	void print();
+	Iterator * makeIterator();
 };
 
 #endif /* PA2_H_ */
