@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <cmath>
 #include "pa2.h"
 
 Iterator::Iterator(Page * startNode){ // @suppress("Class members should be properly initialized")
@@ -108,13 +108,13 @@ OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members shou
 }
 
 void OS::addAfter(std::string programName, Page * loc){
-	Page * newPage = new Page();
+	removePage("FREE");
 	if(loc == NULL)
 		return;
+	Page * newPage = new Page();
 	newPage->data = programName;
 	newPage->next = loc->next;
-	loc->next = newPage->next;
-	removePage("FREE");
+	loc->next = newPage;
 }
 
 void OS::addToFront(std::string programName){
@@ -137,7 +137,8 @@ void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 
 void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
 	Page * location = findStartOfLongestCSS("FREE", this->makeIterator());
-	this->addAfter(programName,location);
+	for(int i = 0; i < ceil(pageSize/4); i++)
+		this->addAfter(programName,location);
 }
 
 int OS::getFreeSpaceSize(Page * startPage){
@@ -215,9 +216,6 @@ void OS::print(){
 	}
 }
 
-
-
-
 int main(/*int argc, char *argv[]*/) {
 	/*std::string algorithmChosen = "";
 	algorithmChosen = argv[1];
@@ -228,13 +226,10 @@ int main(/*int argc, char *argv[]*/) {
 	oSystem->print();
 	std::cout << std::endl;
 	oSystem->addToFront("P1");
-	oSystem->addToFront("P2");
 	oSystem->print();
-	std::cout << "\nNumber of fragments:: " << findAmountOfFragments("FREE", oSystem->makeIterator()) << "\n" << std::endl;
-	oSystem->removePage("P1");
-	oSystem->print();
+	std::cout << "\n" << std::endl;
 
-	oSystem->useSelectedAlgorithm("Bobby", 20);
+	oSystem->useSelectedAlgorithm("FLEE", 20);
 	std::cout << "\n\n" << std::endl;
 	oSystem->print();
 
