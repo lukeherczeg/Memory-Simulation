@@ -27,8 +27,6 @@ Iterator * OS::makeIterator(){
 	return new Iterator(startPage);
 }
 
-
-
 template <class T> int findAmountOfFragments(T valueSearchingFor, Iterator * it){
 	int count = 0;
 	it->begin();
@@ -44,8 +42,7 @@ template <class T> int findAmountOfFragments(T valueSearchingFor, Iterator * it)
 	return count;
 }
 
-
-template <class T> Page * findStartofLongestCSS(T valueSearchingFor, Iterator * it){
+template <class T> Page * findStartOfLongestCSS(T valueSearchingFor, Iterator * it){
 	int max = 0;
 	Page * maxPointer = NULL;
 	it->begin();
@@ -66,7 +63,7 @@ template <class T> Page * findStartofLongestCSS(T valueSearchingFor, Iterator * 
 	return maxPointer;
 }
 
-template <class T> Page * findStartOfLongestCSS(T valueSearchingFor, int minSize, Iterator * it){
+template <class T> Page * findStartOfBestFitCSS(T valueSearchingFor, int minSize, Iterator * it){
 	int max = 0;
 	Page * maxPointer = NULL;
 	it->begin();
@@ -93,17 +90,13 @@ template <class T> int findContiguousSize(T valueSearchingFor, Iterator * it){
 		count++;
 		it->next();
 	}
-	return count;
+	return count-1;
 }
 
 template <class T> void getToEndOfProgram(T valueSearchingFor, Iterator * it){
 	while(!(it->end()) && it->current()->data == valueSearchingFor){
 		it->next();
 	}
-}
-
-int max(int a,int b){
-	return((a>b) ? (a) : (b));
 }
 
 OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members should be properly initialized")
@@ -115,21 +108,13 @@ OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members shou
 }
 
 void OS::addAfter(std::string programName, Page * loc){
-	Page * temp, * left, * right;
-	right = startPage;
-	left = right;
-	temp = new Page();
-	temp->data = programName;
-	left->next = temp;
-	left = temp;
-	left->next = right;
-	temp = right;
-	right->next = temp->next;
-	if(temp == endPage)
-		endPage = right;
-	right->next = right->next->next;
-	delete temp;
-	temp = NULL;
+	Page * newPage = new Page();
+	if(loc == NULL)
+		return;
+	newPage->data = programName;
+	newPage->next = loc->next;
+	loc->next = newPage->next;
+	removePage("FREE");
 }
 
 void OS::addToFront(std::string programName){
@@ -146,59 +131,13 @@ void OS::addToFront(std::string programName){
 }
 
 void OS::addPageBestAlgorithm(std::string programName, int pageSize){
-	int numFragments = this->amountOfFragments();
-	for(int i = 0; i < numFragments; i++){
-
-	}
-
-
-
-
-
-
-	/*if(startPage->data == programName){
-		Page * newPage = new Page();
-		newPage->data = programName;
-		newPage->next = startPage;
-		startPage = newPage;
-		return;
-	}
-	Page * current = startPage;
-	while(programName != current->data)
-		current = current->next;
-	Page * newPage = new Page();
-	newPage->data = programName;
-	newPage->next = current->next;
-	current->next = newPage;
-	if(current == endPage)
-		endPage = newPage;*/
+	Page * location = findStartOfBestFitCSS("FREE", pageSize, this->makeIterator());
+	this->addAfter(programName, location);
 }
 
 void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
-	Page * temp = startPage;
-	int amtFragments = this->amountOfFragments();
-	int * amtsOfFragment = new int[amtFragments];
-	int amtFreeSpace = 0;
-	for(int i = 0; i < amtFragments; i++){
-		amtFreeSpace = this->getFreeSpaceSize(temp);
-		amtsOfFragment[i] = amtFreeSpace;
-		if(temp->next != NULL)
-			for(int i = 0; i < amtFreeSpace/4 - 4; i++)
-				temp = temp->next;
-	}
-	int maxVal = 0;
-	for(int i = 0; i < amtFragments; i++){
-		maxVal = max(amtsOfFragment[i], maxVal);
-	}
-	if(maxVal >= pageSize){
-		for(int i = 0; i < maxVal; i++){
-		//addAfter(programName, findstartof)
-			//this->addAfter(programName,);
-		}
-	}
-	else{
-		std::cout << "Cannot add, not enough space." << std::endl;
-	}
+	Page * location = findStartOfLongestCSS("FREE", this->makeIterator());
+	this->addAfter(programName,location);
 }
 
 int OS::getFreeSpaceSize(Page * startPage){
@@ -222,8 +161,8 @@ int OS::getFreeSpaceSize(Page * startPage){
 	return count;
 }
 
-void OS::chooseAlgorithm(std::string programName, int pageSize){
-	if(algorithmChosen == "best"){
+void OS::useSelectedAlgorithm(std::string programName, int pageSize){
+	if(this->algorithmChosen == "best"){
 		addPageBestAlgorithm(programName,pageSize);
 	}
 	else {
@@ -233,22 +172,18 @@ void OS::chooseAlgorithm(std::string programName, int pageSize){
 
 void OS::removePage(std::string programName){
 	if(programName == startPage->data){
-		Page * temp = startPage;
+		startPage->data == "FREE";
 		startPage = startPage->next;
-		delete temp;
-		temp = NULL;
 		return;
 	}
 	Page * current = startPage;
-	while(programName != current->data)
+	while(programName != current->data && current!= endPage)
 		current = current->next;
-	Page * temp = current;
-	current->next = temp->next;
-	if(temp == endPage)
+	current->data = "FREE";
+	if(current == endPage)
 		endPage = current;
-	current->next = current->next->next;
-	delete temp;
-	temp = NULL;
+	else
+		current = current->next;
 }
 
 int OS::amountOfFragments(){
@@ -292,13 +227,18 @@ int main(/*int argc, char *argv[]*/) {
 	OS * oSystem = new OS(algorithmChosen, 128);
 	oSystem->print();
 	std::cout << std::endl;
-	//oSystem->removePage("FREE");
-	oSystem->print();
 	oSystem->addToFront("P1");
-	oSystem->removePage("FREE");
-	std::cout << "\nNumber of fragments:: " << findAmountOfFragments("FREE", oSystem->makeIterator()) << "\n" << std::endl;
-	std::cout << "\nNumber of fragments:: " << findAmountOfFragments("P1", oSystem->makeIterator()) << "\n" << std::endl;
-	//std::cout << "\nSize of P1:: " << findContiguousSize("P1", oSystem->makeIterator()) << "\n" << std::endl;
+	oSystem->addToFront("P2");
 	oSystem->print();
+	std::cout << "\nNumber of fragments:: " << findAmountOfFragments("FREE", oSystem->makeIterator()) << "\n" << std::endl;
+	oSystem->removePage("P1");
+	oSystem->print();
+
+	oSystem->useSelectedAlgorithm("Bobby", 20);
+	std::cout << "\n\n" << std::endl;
+	oSystem->print();
+
+
+
 	return 0;
 }

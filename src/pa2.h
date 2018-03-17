@@ -33,7 +33,7 @@ public:
 	OS(std::string algorithmChosen, int osSize);
 	void addToFront(std::string programName);
 	void addAfter(std::string program, Page * loc);
-	void chooseAlgorithm(std::string programName, int pageSize);
+	void useSelectedAlgorithm(std::string programName, int pageSize);
 	void removePage(std::string programName);
 	int amountOfFragments();
 	void print();
