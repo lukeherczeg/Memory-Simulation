@@ -16,8 +16,9 @@ public:
 	Iterator(Page * startNode);
 	bool end();
 	void begin();
-	Page * current();
 	void next();
+	Page * getNext();
+	Page * current();
 };
 
 class OS {
@@ -32,7 +33,7 @@ private:
 public:
 	OS(std::string algorithmChosen, int osSize);
 	void addToFront(std::string programName);
-	void addAfter(std::string program, Page * loc);
+	void insert(std::string program, Page * loc);
 	void deleteFreeSpace(Page * loc);
 	void useSelectedAlgorithm(std::string programName, int pageSize);
 	void removePage(std::string programName, int pageSize);

@@ -19,6 +19,10 @@ void Iterator::next(){
 	this->currentNode = this->currentNode->next;
 }
 
+Page * Iterator::getNext(){
+	return this->currentNode->next;
+}
+
 Page * Iterator::current(){
 	return this->currentNode;
 }
@@ -40,6 +44,15 @@ template <class T> int findAmountOfFragments(T valueSearchingFor, Iterator * it)
 		}
 	}
 	return count;
+}
+
+template <class T> int findContiguousSize(T valueSearchingFor, Iterator * it){
+	int count = 0;
+	while(!(it->end()) && it->current()->data == valueSearchingFor){
+		count++;
+		it->next();
+	}
+	return count-1;
 }
 
 template <class T> Page * findStartOfLongestCSS(T valueSearchingFor, Iterator * it){
@@ -84,15 +97,6 @@ template <class T> Page * findStartOfBestFitCSS(T valueSearchingFor, int minSize
 	return maxPointer;
 }
 
-template <class T> int findContiguousSize(T valueSearchingFor, Iterator * it){
-	int count = 0;
-	while(!(it->end()) && it->current()->data == valueSearchingFor){
-		count++;
-		it->next();
-	}
-	return count-1;
-}
-
 template <class T> void getToEndOfProgram(T valueSearchingFor, Iterator * it){
 	while(!(it->end()) && it->current()->data == valueSearchingFor){
 		it->next();
@@ -107,7 +111,23 @@ OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members shou
 		this->addToFront("FREE");
 }
 
-void OS::addAfter(std::string programName, Page * loc){
+void OS::insert(std::string programName, Page * loc){
+	/*Page * newPage = new Page();
+	if(startPage == loc){
+		newPage->next = startPage;
+		startPage = newPage;
+		return;
+	}
+	if(endPage == loc){
+		newPage->next = loc;
+		prev->next = newPage;
+		return;
+	}
+	newPage->next = loc->next;
+	prev->next = newPage;
+*/
+
+
 	if(loc == NULL)
 		return;
 	Page * newPage = new Page();
@@ -117,7 +137,13 @@ void OS::addAfter(std::string programName, Page * loc){
 }
 
 void OS::deleteFreeSpace(Page * loc){
-	if(loc->data == "FREE"){
+	if(loc->next == NULL){
+		Page * temp = loc->next;
+		free(temp);
+		return;
+	}
+
+   	if(loc->data == "FREE"){
 		Page * temp = loc->next;
 		loc->next = temp->next;
 		free(temp);
@@ -139,11 +165,22 @@ void OS::addToFront(std::string programName){
 
 void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 	Page * location = findStartOfBestFitCSS("FREE", pageSize, this->makeIterator());
-	for(int i = 0; i < ceil(pageSize/4); i++){
-		this->deleteFreeSpace(location);
+	if(location == startPage->next){
+		for(int i = 0; i < ceil(pageSize/4); i++){
+			this->deleteFreeSpace(location);
+		}
+		for(int i = 0; i < ceil(pageSize/4); i++){
+			this->addToFront(programName);
+		}
+		return;
 	}
-	for(int i = 0; i < ceil(pageSize/4); i++){
-		this->addAfter(programName,location);
+	else{
+		for(int i = 0; i < ceil(pageSize/4); i++){
+			this->deleteFreeSpace(location);
+		}
+		for(int i = 0; i < ceil(pageSize/4); i++){
+			this->insert(programName,location);
+		}
 	}
 }
 
@@ -153,29 +190,8 @@ void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
 		this->deleteFreeSpace(location);
 	}
 	for(int i = 0; i < ceil(pageSize/4); i++){
-		this->addAfter(programName,location);
+		this->insert(programName,location);
 	}
-}
-
-int OS::getFreeSpaceSize(Page * startPage){
-	int count = 0;
-	Page * temp = startPage;
-	if(temp->next != NULL){
-		while(temp != NULL){
-			if(temp->data == "FREE"){
-				count += 4;
-				if(temp->next == NULL && temp->data == "FREE")
-					count += 4;
-				temp = temp->next;
-			}
-			else{
-				temp = temp->next;
-			}
-		}
-	}
-	else if(startPage->next == NULL && startPage->data == "FREE")
-		count = 4;
-	return count;
 }
 
 void OS::useSelectedAlgorithm(std::string programName, int pageSize){
@@ -203,6 +219,27 @@ void OS::removePage(std::string programName, int pageSize){
 		else
 			current = current->next;
 	}
+}
+
+int OS::getFreeSpaceSize(Page * startPage){
+	int count = 0;
+	Page * temp = startPage;
+	if(temp->next != NULL){
+		while(temp != NULL){
+			if(temp->data == "FREE"){
+				count += 4;
+				if(temp->next == NULL && temp->data == "FREE")
+					count += 4;
+				temp = temp->next;
+			}
+			else{
+				temp = temp->next;
+			}
+		}
+	}
+	else if(startPage->next == NULL && startPage->data == "FREE")
+		count = 4;
+	return count;
 }
 
 int OS::amountOfFragments(){
@@ -244,16 +281,13 @@ int main(/*int argc, char *argv[]*/) {
 	oSystem->print();
 	std::cout << "\n" << std::endl;
 
-	oSystem->useSelectedAlgorithm("XXXX", 124);
+	oSystem->useSelectedAlgorithm("XXXX", 128);
 	std::cout << "\n\n" << std::endl;
 	oSystem->print();
 
-	oSystem->removePage("XXXX", 124);
+	oSystem->removePage("XXXX", 128);
 	std::cout << "\n\n" << std::endl;
 	oSystem->print();
-
-
-
 
 	return 0;
 }
