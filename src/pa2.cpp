@@ -108,13 +108,20 @@ OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members shou
 }
 
 void OS::addAfter(std::string programName, Page * loc){
-	removePage("FREE");
 	if(loc == NULL)
 		return;
 	Page * newPage = new Page();
 	newPage->data = programName;
 	newPage->next = loc->next;
 	loc->next = newPage;
+}
+
+void OS::deleteFreeSpace(Page * loc){
+	if(loc->data == "FREE"){
+		Page * temp = loc->next;
+		loc->next = temp->next;
+		free(temp);
+	}
 }
 
 void OS::addToFront(std::string programName){
@@ -132,13 +139,22 @@ void OS::addToFront(std::string programName){
 
 void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 	Page * location = findStartOfBestFitCSS("FREE", pageSize, this->makeIterator());
-	this->addAfter(programName, location);
+	for(int i = 0; i < ceil(pageSize/4); i++){
+		this->deleteFreeSpace(location);
+	}
+	for(int i = 0; i < ceil(pageSize/4); i++){
+		this->addAfter(programName,location);
+	}
 }
 
 void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
 	Page * location = findStartOfLongestCSS("FREE", this->makeIterator());
-	for(int i = 0; i < ceil(pageSize/4); i++)
+	for(int i = 0; i < ceil(pageSize/4); i++){
+		this->deleteFreeSpace(location);
+	}
+	for(int i = 0; i < ceil(pageSize/4); i++){
 		this->addAfter(programName,location);
+	}
 }
 
 int OS::getFreeSpaceSize(Page * startPage){
@@ -171,20 +187,22 @@ void OS::useSelectedAlgorithm(std::string programName, int pageSize){
 	}
 }
 
-void OS::removePage(std::string programName){
-	if(programName == startPage->data){
-		startPage->data == "FREE";
-		startPage = startPage->next;
-		return;
+void OS::removePage(std::string programName, int pageSize){
+	for(int i = 0; i < ceil(pageSize/4); i++){
+		if(programName == startPage->data){
+			startPage->data == "FREE";
+			startPage = startPage->next;
+			return;
+		}
+		Page * current = startPage;
+		while(programName != current->data && current!= endPage)
+			current = current->next;
+		current->data = "FREE";
+		if(current == endPage)
+			endPage = current;
+		else
+			current = current->next;
 	}
-	Page * current = startPage;
-	while(programName != current->data && current!= endPage)
-		current = current->next;
-	current->data = "FREE";
-	if(current == endPage)
-		endPage = current;
-	else
-		current = current->next;
 }
 
 int OS::amountOfFragments(){
@@ -224,14 +242,16 @@ int main(/*int argc, char *argv[]*/) {
 	std::string algorithmChosen = "worst";
 	OS * oSystem = new OS(algorithmChosen, 128);
 	oSystem->print();
-	std::cout << std::endl;
-	oSystem->addToFront("P1");
-	oSystem->print();
 	std::cout << "\n" << std::endl;
 
-	oSystem->useSelectedAlgorithm("FLEE", 20);
+	oSystem->useSelectedAlgorithm("XXXX", 124);
 	std::cout << "\n\n" << std::endl;
 	oSystem->print();
+
+	oSystem->removePage("XXXX", 124);
+	std::cout << "\n\n" << std::endl;
+	oSystem->print();
+
 
 
 

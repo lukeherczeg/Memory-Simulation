@@ -33,8 +33,9 @@ public:
 	OS(std::string algorithmChosen, int osSize);
 	void addToFront(std::string programName);
 	void addAfter(std::string program, Page * loc);
+	void deleteFreeSpace(Page * loc);
 	void useSelectedAlgorithm(std::string programName, int pageSize);
-	void removePage(std::string programName);
+	void removePage(std::string programName, int pageSize);
 	int amountOfFragments();
 	void print();
 	Iterator * makeIterator();
