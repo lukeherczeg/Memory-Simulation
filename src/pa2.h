@@ -36,7 +36,8 @@ public:
 	void insert(std::string program, Page * loc);
 	void deleteFreeSpace(Page * loc);
 	void useSelectedAlgorithm(std::string programName, int pageSize);
-	void removePage(std::string programName, int pageSize);
+	void removePage(std::string programName);
+	bool pageExists(std::string programName, Iterator * it);
 	int amountOfFragments();
 	void print();
 	Iterator * makeIterator();

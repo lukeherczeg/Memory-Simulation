@@ -31,6 +31,7 @@ Iterator * OS::makeIterator(){
 	return new Iterator(startPage);
 }
 
+
 template <class T> int findAmountOfFragments(T valueSearchingFor, Iterator * it){
 	int count = 0;
 	it->begin();
@@ -52,7 +53,7 @@ template <class T> int findContiguousSize(T valueSearchingFor, Iterator * it){
 		count++;
 		it->next();
 	}
-	return count-1;
+	return count;
 }
 
 template <class T> Page * findStartOfLongestCSS(T valueSearchingFor, Iterator * it){
@@ -72,7 +73,6 @@ template <class T> Page * findStartOfLongestCSS(T valueSearchingFor, Iterator * 
 		it->next();
 		}
 	}
-	std::cout << max << std::endl;
 	return maxPointer;
 }
 
@@ -93,7 +93,6 @@ template <class T> Page * findStartOfBestFitCSS(T valueSearchingFor, int minSize
 			it->next();
 		}
 	}
-	std::cout << max << std::endl;
 	return maxPointer;
 }
 
@@ -108,7 +107,7 @@ OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members shou
 	this->size = osSize;
 	startPage = NULL;
 	for(int i = 0; i < osSize/4; i++)
-		this->addToFront("FREE");
+		this->addToFront("Free");
 }
 
 void OS::insert(std::string programName, Page * loc){
@@ -143,7 +142,7 @@ void OS::deleteFreeSpace(Page * loc){
 		return;
 	}
 
-   	if(loc->data == "FREE"){
+   	if(loc->data == "Free"){
 		Page * temp = loc->next;
 		loc->next = temp->next;
 		free(temp);
@@ -164,7 +163,7 @@ void OS::addToFront(std::string programName){
 }
 
 void OS::addPageBestAlgorithm(std::string programName, int pageSize){
-	Page * location = findStartOfBestFitCSS("FREE", pageSize, this->makeIterator());
+	Page * location = findStartOfBestFitCSS("Free", pageSize, this->makeIterator());
 	if(location == startPage->next){
 		for(int i = 0; i < ceil(pageSize/4); i++){
 			this->deleteFreeSpace(location);
@@ -185,7 +184,7 @@ void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 }
 
 void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
-	Page * location = findStartOfLongestCSS("FREE", this->makeIterator());
+	Page * location = findStartOfLongestCSS("Free", this->makeIterator());
 	for(int i = 0; i < ceil(pageSize/4); i++){
 		this->deleteFreeSpace(location);
 	}
@@ -203,17 +202,17 @@ void OS::useSelectedAlgorithm(std::string programName, int pageSize){
 	}
 }
 
-void OS::removePage(std::string programName, int pageSize){
-	for(int i = 0; i < ceil(pageSize/4); i++){
+void OS::removePage(std::string programName){
+	Page * current = startPage;
+	while(programName != current->data && current!= endPage)
+		current = current->next;
+	while(programName == current->data && current!= endPage){
 		if(programName == startPage->data){
-			startPage->data == "FREE";
+			startPage->data == "Free";
 			startPage = startPage->next;
 			return;
 		}
-		Page * current = startPage;
-		while(programName != current->data && current!= endPage)
-			current = current->next;
-		current->data = "FREE";
+		current->data = "Free";
 		if(current == endPage)
 			endPage = current;
 		else
@@ -226,9 +225,9 @@ int OS::getFreeSpaceSize(Page * startPage){
 	Page * temp = startPage;
 	if(temp->next != NULL){
 		while(temp != NULL){
-			if(temp->data == "FREE"){
+			if(temp->data == "Free"){
 				count += 4;
-				if(temp->next == NULL && temp->data == "FREE")
+				if(temp->next == NULL && temp->data == "Free")
 					count += 4;
 				temp = temp->next;
 			}
@@ -237,7 +236,7 @@ int OS::getFreeSpaceSize(Page * startPage){
 			}
 		}
 	}
-	else if(startPage->next == NULL && startPage->data == "FREE")
+	else if(startPage->next == NULL && startPage->data == "Free")
 		count = 4;
 	return count;
 }
@@ -271,23 +270,105 @@ void OS::print(){
 	}
 }
 
+bool OS::pageExists(std::string programName, Iterator * it){
+	it->begin();
+	while(!it->end()){
+		if(it->current()->data == programName){
+			return true;
+		}
+		it->next();
+	}
+	return false;
+}
+
 int main(/*int argc, char *argv[]*/) {
 	/*std::string algorithmChosen = "";
 	algorithmChosen = argv[1];
 	search eclipse command line arguments stuff.
 	*/
 	std::string algorithmChosen = "worst";
-	OS * oSystem = new OS(algorithmChosen, 128);
-	oSystem->print();
-	std::cout << "\n" << std::endl;
+	int oSystemSize = 128;
 
-	oSystem->useSelectedAlgorithm("XXXX", 128);
+	OS * oSystem = new OS(algorithmChosen, oSystemSize);
+	oSystem->print();
+
+	oSystem->useSelectedAlgorithm("XXXX", 32);
 	std::cout << "\n\n" << std::endl;
 	oSystem->print();
 
-	oSystem->removePage("XXXX", 128);
+	oSystem->removePage("XXXX");
 	std::cout << "\n\n" << std::endl;
 	oSystem->print();
+
+
+	std::cout << "\n\n" << std::endl;
+
+	std::cout << "Using " << algorithmChosen << " fit algorithm\n" << std::endl;
+	int programSize = 0;
+	std::string programName = "";
+	std::cout << "\t1. Add program\n\t2. Kill program\n\t3. Fragmentation\n\t4. Print memory\n\t5. Exit\n" << std::endl;
+
+	bool running = true;
+	int userInput = 0;
+	while(running){
+		std::cout << "choice - ";
+		std::cin >> userInput;
+		switch(userInput){
+			case 1:
+				std::cout << "Program name - ";
+				std::cin >> programName;
+				std::cout << "Program size (KB) - ";
+				std::cin >> programSize;
+				std::cout << std::endl;
+
+				if(programSize > oSystemSize){
+					std::cout << "Error, not enough memory for Program " << programName << "." << std::endl;
+					std::cout << std::endl;
+					break;
+				}
+
+				if(!(oSystem->pageExists(programName,oSystem->makeIterator()))){
+					oSystem->useSelectedAlgorithm(programName, programSize);
+					std::cout << "Program " << programName << " added successfully: " << findContiguousSize(programName, oSystem->makeIterator()) << " page(s) used.\n" << std::endl;
+				}
+				else{
+					std::cout << "Error, Program " << programName << " already running." << std::endl;
+					std::cout << std::endl;
+				}
+
+				break;
+			case 2:
+				std::cout << "Program name - ";
+				std::cin >> programName;
+				oSystem->removePage(programName);
+				std::cout << "\nProgram " << programName << " successfully killed, " << findContiguousSize(programName, oSystem->makeIterator()) << " page(s) reclaimed.\n" << std::endl;
+				break;
+			case 3:
+				std::cout << "\nThere are " << findAmountOfFragments("Free", oSystem->makeIterator()) << " fragment(s).\n" << std::endl;
+				break;
+			case 4:
+				std::cout << std::endl;
+				oSystem->print();
+				std::cout << std::endl;
+				break;
+			case 5:
+				running = false;
+				break;
+			default:
+				std::cout << "\nError, choice out of bounds!\n" << std::endl;
+				break;
+		}
+	}
+
+
+
+
+
+
+
+
+
+
 
 	return 0;
 }
