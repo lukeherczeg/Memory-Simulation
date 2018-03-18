@@ -128,27 +128,7 @@ OS::OS(std::string algorithmChosen,int osSize){ // @suppress("Class members shou
 }
 
 void OS::insert(std::string programName, Page * loc){
-	/*Page * newPage = new Page();
-	if(startPage == loc){
-		newPage->next = startPage;
-		startPage = newPage;
-		return;
-	}
-	if(endPage == loc){
-		newPage->next = loc;
-		prev->next = newPage;
-		return;
-	}
-	newPage->next = loc->next;
-	prev->next = newPage;
-	 */
-
-	if(loc == NULL)
-		return;
-	Page * newPage = new Page();
-	newPage->data = programName;
-	newPage->next = loc->next;
-	loc->next = newPage;
+	loc->data = programName;
 }
 
 void OS::deleteFreeSpace(Page * loc){
@@ -180,25 +160,32 @@ void OS::addToFront(std::string programName){
 
 void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 	Page * location = findStartOfBestFitCSS("Free", pageSize, this->makeIterator());
-	for(int i = 0; i < ceil(pageSize/4); i++){
-		this->deleteFreeSpace(location);
-	}
-	for(int i = 0; i < ceil(pageSize/4); i++){
-		this->insert(programName,location);
-	}
-}
-
-void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
-	Page * location = findStartOfLongestCSS("Free", this->makeIterator());
 	int target = ceil(pageSize/4);
 	int freeSpaceSize = this->getFreeSpaceSize(location);
 	std::cout << freeSpaceSize << std::endl;
 	if((pageSize <= freeSpaceSize) && (this->size >= freeSpaceSize)){
 		for(int i = 0; i < target; i++){
-			this->deleteFreeSpace(location);
+			this->insert(programName, location);
+			location = location->next;
 		}
+		std::cout << "Program " << programName << " added successfully: " << target << " page(s) used.\n" << std::endl;
+	}
+	else{
+		std::cout << "Error, not enough memory for Program " << programName << "." << std::endl;
+		std::cout << std::endl;
+	}
+}
+
+void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
+	Page * location = findStartOfLongestCSS("Free", this->makeIterator());
+	int target = ceil((double)pageSize/4);
+	std::cout << target << std::endl;
+	int freeSpaceSize = this->getFreeSpaceSize(location);
+	std::cout << freeSpaceSize << std::endl;
+	if((pageSize <= freeSpaceSize) && (this->size >= freeSpaceSize)){
 		for(int i = 0; i < target; i++){
 			this->insert(programName, location);
+			location = location->next;
 		}
 		std::cout << "Program " << programName << " added successfully: " << target << " page(s) used.\n" << std::endl;
 	}
@@ -219,19 +206,14 @@ void OS::useSelectedAlgorithm(std::string programName, int pageSize){ //works
 
 void OS::removePage(std::string programName){ //works
 	Page * current = startPage;
-	while(programName != current->data && current != endPage)
-		current = current->next;
-	while(programName == current->data && current != endPage){
-		if(programName == startPage->data){
-			startPage->data == "Free";
-			startPage = startPage->next;
-			return;
+	while(current != endPage){
+		if(programName == current->data){
+			current->data = "Free";
 		}
-		current->data = "Free";
-		if(current == endPage)
-			endPage = current;
-		else
-			current = current->next;
+		current = current->next;
+		if(current == endPage){
+			current->data = "Free";
+		}
 	}
 }
 
@@ -265,12 +247,14 @@ bool OS::pageExists(std::string programName, Iterator * it){ //works
 int OS::sizeOfPage(std::string programName){
 	int count = 0;
 	Page * current = this->startPage;
-	while(programName != current->data && current != endPage)
+	while(current != endPage){
+		if(programName == current->data){
+			count++;
+		}
 		current = current->next;
-	while(programName == current->data && current != endPage){
-		count++;
-		if(current != endPage)
-			current = current->next;
+		if(current == endPage && programName == current->data){
+			count++;
+		}
 	}
 	return count;
 }
