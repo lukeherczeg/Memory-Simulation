@@ -131,20 +131,6 @@ void OS::insert(std::string programName, Page * loc){
 	loc->data = programName;
 }
 
-void OS::deleteFreeSpace(Page * loc){
-	if(loc->next == NULL){
-		Page * temp = loc->next;
-		free(temp);
-		return;
-	}
-
-   	if(loc->data == "Free"){
-		Page * temp = loc->next;
-		loc->next = temp->next;
-		free(temp);
-	}
-}
-
 void OS::addToFront(std::string programName){
 	if(startPage==NULL){
 		startPage = new Page();
@@ -179,9 +165,7 @@ void OS::addPageBestAlgorithm(std::string programName, int pageSize){
 void OS::addPageWorstAlgorithm(std::string programName,int pageSize){
 	Page * location = findStartOfLongestCSS("Free", this->makeIterator());
 	int target = ceil((double)pageSize/4);
-	std::cout << target << std::endl;
 	int freeSpaceSize = this->getFreeSpaceSize(location);
-	std::cout << freeSpaceSize << std::endl;
 	if((pageSize <= freeSpaceSize) && (this->size >= freeSpaceSize)){
 		for(int i = 0; i < target; i++){
 			this->insert(programName, location);
@@ -211,7 +195,7 @@ void OS::removePage(std::string programName){ //works
 			current->data = "Free";
 		}
 		current = current->next;
-		if(current == endPage){
+		if(current == endPage && programName == current->data){
 			current->data = "Free";
 		}
 	}
@@ -287,63 +271,14 @@ int main(/*int argc, char *argv[]*/) {
 
 	std::cout << "Using " << algorithmChosen << " fit algorithm\n" << std::endl;
 
-	int programSize = 0;
-	std::string programName = "";
-/*
-	//TEST
-	programSize = 50;
-	programName = "P1";
-	if(!(oSystem->pageExists(programName,oSystem->makeIterator()))){
-		oSystem->useSelectedAlgorithm(programName, programSize);
-	}
-	else{
-		std::cout << "Error, Program " << programName << " already running." << std::endl;
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	oSystem->print();
-	std::cout << std::endl;
-
-	programSize = 50;
-	programName = "P2";
-	if(!(oSystem->pageExists(programName,oSystem->makeIterator()))){
-		oSystem->useSelectedAlgorithm(programName, programSize);
-	}
-	else{
-		std::cout << "Error, Program " << programName << " already running." << std::endl;
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	oSystem->print();
-	std::cout << std::endl;
-*//*
-	//Test
-	programSize = 50;
-	programName = "P1";
-	if(!(oSystem->pageExists(programName,oSystem->makeIterator()))){
-		oSystem->useSelectedAlgorithm(programName, programSize);
-	}
-	else{
-		std::cout << "Error, Program " << programName << " already running." << std::endl;
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	oSystem->print();
-	std::cout << std::endl;
-
-	int tempSize = oSystem->sizeOfPage(programName);
-	oSystem->removePage(programName);
-	std::cout << "\nProgram " << programName << " successfully killed, " << tempSize << " page(s) reclaimed.\n" << std::endl;
-
-	std::cout << std::endl;
-	oSystem->print();
-	std::cout << std::endl;
-*/
-	std::cout << "\t1. Add program\n\t2. Kill program\n\t3. Fragmentation\n\t4. Print memory\n\t5. Exit\n" << std::endl;
-
 	int tempSize = 0;
 	bool running = true;
 	int userInput = 0;
+	int programSize = 0;
+	std::string programName = "";
+
+	std::cout << "\t1. Add program\n\t2. Kill program\n\t3. Fragmentation\n\t4. Print memory\n\t5. Exit\n" << std::endl;
+
 	while(running){
 		std::cout << "choice - ";
 		std::cin >> userInput;
