@@ -3,7 +3,7 @@
 #include <cmath>
 #include "pa2.h"
 
-////////////////// Simple functions for iterator //////////////////
+////////////////// Simple definitions for iterator //////////////////
 
 Iterator::Iterator(Page * startNode){ // Initializes iterator
 	this->startNode = startNode;
@@ -34,7 +34,7 @@ Iterator * OS::makeIterator(){
 	return new Iterator(startPage);
 }
 
-////////////////// Simple functions for iterator //////////////////
+//////////////////////////////////////////////////////////////////
 
 template <class T> int findAmountOfFragments(T valueSearchingFor, Iterator * it){ // Takes in an iterator and then iterates through, and once it finds a value
 	int count = 0;																  // it uses getToEndOfProgram() to only increase the count 1 for each section of
@@ -204,48 +204,6 @@ void OS::removeProgram(std::string programName){ // Changes every occurrence of 
 	}
 }
 
-int OS::getFreeSpaceSize(Page * loc){ // Given a location, determines the pages of free space from that location on (in KB)
-	int count = 0;
-	while(loc != NULL){
-		if(loc->data == "Free"){
-			count++;
-		}
-		else if(loc->data != "Free" && count > 0){
-			break;
-		}
-		if(loc->next == NULL)
-			break;
-		loc = loc->next;
-	}
-	return count * 4;
-}
-
-bool OS::pageExists(std::string programName, Iterator * it){ // Finds whether or not a program already exists
-	it->begin();
-	while(!it->end()){
-		if(it->current()->data == programName){
-			return true;
-		}
-		it->next();
-	}
-	return false;
-}
-
-int OS::sizeOfProgram(std::string programName){  // Accurately calculates the size of a given program (in pages)
-	int count = 0;
-	Page * current = this->startPage;
-	while(current != endPage){
-		if(programName == current->data){
-			count++;
-		}
-		current = current->next;
-		if(current == endPage && programName == current->data){
-			count++;
-		}
-	}
-	return count;
-}
-
 void OS::print(){ // Prints with formatting for 1, 2, 3, or 4 character long names
 	int count = 0;
 	std::string dataName = "";
@@ -273,6 +231,49 @@ void OS::print(){ // Prints with formatting for 1, 2, 3, or 4 character long nam
 		}
 	}
 }
+
+int OS::getFreeSpaceSize(Page * loc){ // Given a location, determines the pages of free space from that location on (in KB)
+	int count = 0;
+	while(loc != NULL){
+		if(loc->data == "Free"){
+			count++;
+		}
+		else if(loc->data != "Free" && count > 0){
+			break;
+		}
+		if(loc->next == NULL)
+			break;
+		loc = loc->next;
+	}
+	return count * 4;
+}
+
+int OS::sizeOfProgram(std::string programName){  // Accurately calculates the size of a given program (in pages)
+	int count = 0;
+	Page * current = this->startPage;
+	while(current != endPage){
+		if(programName == current->data){
+			count++;
+		}
+		current = current->next;
+		if(current == endPage && programName == current->data){
+			count++;
+		}
+	}
+	return count;
+}
+
+bool OS::pageExists(std::string programName, Iterator * it){ // Finds whether or not a program already exists
+	it->begin();
+	while(!it->end()){
+		if(it->current()->data == programName){
+			return true;
+		}
+		it->next();
+	}
+	return false;
+}
+
 
 int main(int argc, char *argv[]) {         // Takes in arguments for worst or best
 	std::string algorithmChosen = argv[1]; // Sets the algorithm to the first (second) argument given
