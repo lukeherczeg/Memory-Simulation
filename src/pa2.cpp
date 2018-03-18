@@ -280,14 +280,15 @@ int main(int argc, char *argv[]) {         // Takes in arguments for worst or be
 
 	OS * oSystem = new OS(algorithmChosen, oSystemSize); // Initializes OS
 
-	std::cout << "Using " << algorithmChosen << " fit algorithm\n" << std::endl;
+	std::cout << "Using " << algorithmChosen << " fit algorithm:\n" << std::endl;
 
 	// Initializes all variables needed
 
 	int tempSize = 0;
-	bool running = true;
+	int fragments;
 	int userInput = 0;
 	int programSize = 0;
+	bool running = true;
 	std::string programName = "";
 
 	// Menu is outside loop since it is printed once
@@ -327,7 +328,7 @@ int main(int argc, char *argv[]) {         // Takes in arguments for worst or be
 				}
 				break;
 			case 3:								// This is the fragments function
-				int fragments = findAmountOfFragments("Free", oSystem->makeIterator()); // Finds fragments using findAmountOfFragments(), and prints them
+				fragments = findAmountOfFragments("Free", oSystem->makeIterator()); // Finds fragments using findAmountOfFragments(), and prints them
 				std::cout << "\nThere are " << fragments << " fragment(s).\n" << std::endl;
 				break;
 			case 4:								// This is the print function

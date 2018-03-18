@@ -29,18 +29,17 @@ private:
 	int size;
 	void addPageBestAlgorithm(std::string programName, int pageSize);
 	void addPageWorstAlgorithm(std::string programName, int pageSize);
-public:
-	OS(std::string algorithmChosen, int osSize);
-	void fillWithFree();
 	void insert(std::string program, Page * loc);
 	int getFreeSpaceSize(Page * loc);
-	void deleteFreeSpace(Page * loc);
+	void fillWithFree();
+public:
+	OS(std::string algorithmChosen, int osSize);
+	Iterator * makeIterator();
 	void useSelectedAlgorithm(std::string programName, int pageSize);
 	void removeProgram(std::string programName);
+	void print();
 	int sizeOfProgram(std::string programName);
 	bool pageExists(std::string programName, Iterator * it);
-	void print();
-	Iterator * makeIterator();
 };
 
 #endif /* PA2_H_ */
