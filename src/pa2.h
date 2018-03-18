@@ -31,13 +31,13 @@ private:
 	void addPageWorstAlgorithm(std::string programName, int pageSize);
 public:
 	OS(std::string algorithmChosen, int osSize);
-	void addToFront(std::string programName);
+	void fillWithFree();
 	void insert(std::string program, Page * loc);
 	int getFreeSpaceSize(Page * loc);
 	void deleteFreeSpace(Page * loc);
 	void useSelectedAlgorithm(std::string programName, int pageSize);
-	void removePage(std::string programName);
-	int sizeOfPage(std::string programName);
+	void removeProgram(std::string programName);
+	int sizeOfProgram(std::string programName);
 	bool pageExists(std::string programName, Iterator * it);
 	void print();
 	Iterator * makeIterator();
